@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>迭代器模式</title>
+</head>
+
+<body>
+  <a href="#">链接1号</a>
+  <a href="#">链接2号</a>
+  <a href="#">链接3号</a>
+  <a href="#">链接4号</a>
+  <a href="#">链接5号</a>
+  <a href="#">链接6号</a>
+  <script src="./node_modules/jquery/dist/jquery.js"></script>
+  <script>
+    const arr = [1, 2, 3]
+    const aNodes = $('a')
+    aNodes.each((index, ele) => {
+      console.log(`DOM类数组的第${index}个元素是${ele.innerText}`)
+    })
+
+    // 实现一个生成器函数
+    function iteratorGenerator(list) {
+      let index = 0
+      let len = list.length
+      return {
+        next: function () {
+          let done = index >= len
+          let value = !donw ? list[index++] : undefined
+
+          return {
+            done,
+            value
+          }
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>

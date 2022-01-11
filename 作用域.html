@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function foo(a, b) {
+        console.log(b);
+        return {
+          foo: function (c) {
+            return foo(c, a);
+          },
+        };
+      }
+
+      var func1 = foo(0); // a = 0 => log undefined
+      func1.foo(1); // a=0 c=1 => foo(1,0) => log 0
+      func1.foo(2); // log 0
+      func1.foo(3); // log 0
+
+      // -------------------------------------------
+      var func2 = foo(0).foo(1).foo(2).foo(3);
+      // foo(0) => a=0 // log undefined
+      // foo(1) => a=0 c=1 => foo(1,0) => log 0
+      // foo(2) => a=1 c=2 => foo(2,1) => log 1
+      // log 2
+      // -------------------------------------------
+
+      var func3 = foo(0).foo(1);
+      // foo(0) => log undefined
+      // foo(1) => log 0
+      // func3 => foo(1，0) => a=1 b=0
+      func3.foo(2); // foo(2,1) => log (1)
+      func3.foo(3); // foo(3,) => 1
+    </script>
+  </body>
+</html>

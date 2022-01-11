@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>单例-全局模态框</title>
+    <style>
+      #modal {
+        height: 200px;
+        width: 200px;
+        line-height: 200px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        /* transform: translate(-50%, -50%); */
+        border: 1px solid lightblue;
+        text-align: center;
+        animation: both scaleBig 0.3s ease-in-out;
+      }
+      @keyframes scaleBig {
+        0% {
+          transform: scale(0);
+        }
+        80% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <button id="open">open</button>
+    <button id="close">close</button>
+
+    <script>
+      const Modal = (function() {
+        let modal;
+        return function() {
+          if (!modal) {
+            modal = document.createElement("div");
+            modal.innerHTML = "全局唯一Modal";
+            modal.id = "modal";
+            modal.style.display = "none";
+            document.body.appendChild(modal);
+          }
+          return modal;
+        };
+      })();
+
+      const openButton = document.getElementById("open");
+      const closeButton = document.getElementById("close");
+      openButton.addEventListener("click", () => {
+        const modal = new Modal();
+        modal.style.display = "block";
+      });
+      closeButton.addEventListener("click", () => {
+        const modal = new Modal();
+        if (modal) {
+          modal.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

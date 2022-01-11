@@ -1,0 +1,27 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"
+  integrity="sha512-u9akINsQsAkG9xjc1cnGF4zw5TFDwkxuc9vUp5dltDWYCSmyd0meygbvgXrlc/z7/o4a19Fb5V0OUE58J7dcyw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script>
+
+  async function myAll(promises) {
+    promises.forEach((promise) => {
+      await promise;
+    });
+  }
+
+  const p1 = axios.get('https://www.baidu.com')
+  const p2 = axios.get('https://www.baidu.com')
+  const p3 = axios.get('https://www.baidu.com')
+  const p4 = axios.get('https://www.baidu.com')
+  console.time();
+
+  async function flush() {
+    await myAll([p1, p2, p3, p4]);
+  }
+  flush()
+
+  console.timeEnd();
+
+</script>

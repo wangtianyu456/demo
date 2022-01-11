@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>观察者模式</title>
+</head>
+
+<body>
+  <script>
+    // 定义发布者类
+    // 具备 添加订阅者 移除订阅者 通知订阅者 功能
+    class Publisher {
+      constructor() {
+        // 观察者列表(订阅者)
+        this.observers = []
+        console.log('Publisher created');
+      }
+      // 增加订阅者
+      add(observer) {
+        console.log('Publisher.add invoked');
+        this.observers.push(observer)
+      }
+      // 移除订阅者
+      remove(observer) {
+        console.log('Publisher.remove invoked');
+        this.observers.forEach((item, index) => {
+          if (item === observer) {
+            this.observers.splice(index, 1)
+          }
+        })
+      }
+      // 通知订阅者
+      notify() {
+        console.log('Publisher.notify invoked');
+        this.observers.forEach((observer) => {
+          observer.update(this)
+        })
+      }
+    }
+
+    // 定义订阅者类
+    class Observer {
+      constructor() {
+        console.log('Observer created');
+      }
+      update() {
+        console.log('Observer.update invoked');
+      }
+    }
+
+  </script>
+</body>
+
+</html>

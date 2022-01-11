@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>IntersectionObserver</title>
+    <style>
+      .img {
+        width: 300px;
+        height: 400px;
+        background-color: lightgray;
+      }
+      .img + .img {
+        margin-top: 1000px;
+      }
+      img{
+          width: 300px;
+          height: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="img">
+        <img src="" alt="" data-img-src="./images/把爷整笑了.jpg" />
+      </div>
+      <div class="img">
+        <img src="" alt="" data-img-src="./images/整挺好.jpg" />
+      </div>
+    </div>
+
+    <script>
+      const images = document.getElementsByTagName("img");
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(item => {
+          let tips = item.isIntersecting ? "看见了" : "看不见";
+          if (item.isIntersecting) {
+            item.target.src = item.target.dataset.imgSrc;
+            observer.unobserve(item.target);
+          }
+        });
+      });
+      [...images].forEach(image => observer.observe(image));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+  <title>工厂模式</title>
+</head>
+<body>
+<script>
+  const person1 = {
+    name: "李磊",
+    age: 25,
+    career: "software engineer"
+  }
+  const person2 = {
+    name: "王磊",
+    age: 23,
+    career: "front end engineer"
+  }
+
+  // 构造函数
+  function Person(name, age, career) {
+    let obj = {}
+    obj.name = name
+    obj.age = age
+    obj.career = career
+    return obj
+  }
+
+  // 简单工厂模式
+  function Coder(name, age) {
+    let obj = {}
+    obj.name = name
+    obj.age = age
+    obj.career = 'coder'
+    obj.work = ['coding', 'bugFix']
+  }
+
+  function ProductManager(name, age) {
+    let obj = {}
+    obj.name = name
+    obj.age = age
+    obj.career = 'product manager'
+    obj.work = ['PRD']
+  }
+
+  // 但是我们不需要每次都手动的去判断是coder还是product manager，我们可以交给一个Factory函数去处理
+  function _Factory(name, age, career) {
+    switch (career) {
+      case 'coder':
+        return Coder(name, age)
+        break
+      case 'product manager':
+        return ProductManager(name, age)
+        break
+    }
+  }
+
+  // 但是此时我们对共性拆分的还是不够彻底，因为name age career work 属性都是相同的，只是值不相同
+  // 所以我们可以重新的封装
+  function User(name, age, career, work) {
+    let obj = {}
+    obj.name = name
+    obj.age = age
+    obj.career = career
+    obj.work = work
+    return obj
+  }
+
+  function Factory(name, age, career) {
+    let work
+    switch (career) {
+      case 'coder':
+        work = ['写代码', '写系分', '修Bug']
+        break
+      case 'product manager':
+        work = ['订会议室', '写PRD', '催更']
+        break
+      case 'boss':
+        work = ['喝茶', '看报', '见客户']
+      // ...
+    }
+    return User(name, age, career, work)
+  }
+</script>
+</body>
+</html>

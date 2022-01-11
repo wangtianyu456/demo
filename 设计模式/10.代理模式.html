@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>代理模式</title>
+  </head>
+  <body>
+    <script>
+      // ES6 中的 proxy
+      const proxy = new Proxy(obj, handler);
+      // 第一个参数是目标对象，handler也是一个对象，同来定义 代理行为
+      // 当我们同过proxy去访问目标对象时，handler会对我们的行为做一层拦截，我们每次访问都需要经过handler这个第三方
+      const girl = {
+        name: "a",
+        about: "I'm a teacher",
+        age: 24,
+        career: "teacher",
+        fakeAvatar:
+          "https://img3.doubanio.com/view/photo/thumb/public/p2157343092.webp",
+        avatar: "https://www.baidu.com",
+        phone: 123465
+      };
+      // 不同权限能看到的信息不同，所以需要一个代理来进行判断
+      // 普通私密信息
+      const baseInfo = ["age", "career"];
+      const privateInfo = ["avatar", "phone"];
+
+      // 用户对象实例
+      const user = {
+        name: "ha",
+        sex: "male",
+        isValidated: true,
+        isVIP: false
+      };
+
+      // 代理
+      const newProxy = new Proxy(girl, {
+        get: function(girl, key) {
+          if (baseInfo.indexOf(key) !== -1 && !user.isValidated) {
+            alert("您还没有完成验证哦");
+            return;
+          }
+
+          // ... 其他的验证逻辑
+
+          // 只有验证过的用户才能购买vip
+          if (user.isValidated && privateInfo.indexOf(key) && !user.isVIP) {
+            alert("只有vip才可以查看该信息");
+            return;
+          }
+        },
+
+        set: function(girl, key, val) {
+          // 最近一次送来的礼物会尝试赋值给lastPresent字段
+          if (val === "lastPresent") {
+            if (val.value < girl.bottomValue) {
+              alert("sorry,您的礼物被拒收了");
+              return;
+            }
+
+            // 如果没有拒收，则赋值成功，同时并入presents数组
+            girl[lastPresent] = val;
+            girl[presents] = [...presents, val];
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

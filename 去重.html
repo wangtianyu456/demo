@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>去重</title>
+</head>
+
+<body>
+
+
+  <script>
+    const removeDuplicates = (arr) => {
+      let map = new Map()
+      arr.forEach(item => {
+        map.set(JSON.stringify(item), item)
+      });
+      return [...map.values()]
+    }
+    const arr1 = [123, 'wang', "123", 'tian', 123]
+    console.log(removeDuplicates(arr1));
+    const arr2 = [123, [1, 2, 3], [1, '2', 3], [1, 2, 3], 'wang']
+    console.log(removeDuplicates(arr2))
+    const arr3 = [123, { a: 1 }, { a: { b: 1 } }, { a: '1' }, { a: { b: 1 } }, "wang"]
+    console.log(removeDuplicates(arr3))
+
+
+    const getType = (function () {
+      const class2Type = { '[object Boolean]': 'boolean', '[object Number]': 'number', '[object String]': 'string', '[object Function]': 'function', '[object Array]': 'array', '[object Date]': 'date', '[object RegExp]': 'regexp', '[object Object]': 'object', '[object Error]': 'error', '[object Symbol]': 'symbol' }
+
+      return function getType(obj) {
+        if (obj == null) {
+          return obj + ''
+        }
+
+        const str = Object.prototype.toString.call(obj)
+        return typeof obj === 'object' || typeof obj === 'function' ? class2Type[str] || 'object' : typeof obj
+      }
+    })()
+
+    // 判断两个元素是否相等
+    const isEqual = (o1, o2) => {
+      const t1 = getType(o1)
+      const t2 = getType(o2)
+      // 比较类型是否一致
+      if (t1 !== t2) return false
+
+      // 类型一致
+      if (t1 === 'array') {
+        // 首先判断数组中的元素个数是否相等
+        if (o1.length !== o2.length) return false
+        // 比较两个数组的中的每个元素
+        return o1.every((item, i) => {
+          return isEqual(item, o2[i])
+        })
+      }
+
+      if (t2 === 'object') {
+        // object 类型与数组一样
+        // 先判断属性个数
+        const o1Keys = Object.keys(o1)
+        const o2Keys = Object.keys(o2)
+        if (o1Keys.length !== o2Keys.length) return false
+        // 然后比较每一个属性
+        return o1Keys.every(k => {
+          return isEqual(k, o2[k])
+        })
+      }
+
+      return o1 === o2
+    }
+
+    const removeDuplicates = (arr) => {
+      return arr.reduce((accumulator, current) => {
+        const hasIndex = accumulator.findIndex(item => isEqual(current, item))
+        if (hasIndex === -1) {
+          accumulator.push(current)
+        }
+        return accumulator
+      }, [])
+    }
+
+  </script>
+
+</body>
+
+</html>

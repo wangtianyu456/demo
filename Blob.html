@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blob</title>
+</head>
+
+<body>
+
+
+  <script>
+    // 1、从字符串创建Blob
+    // let myBlobParts = ['<html><h1>Hello World!</h1></html>']
+    // const blob = new Blob(myBlobParts, {
+    //   type: "text/html",
+    //   endings: "transparent"
+    // })
+    // console.log(blob)
+    // 2、从类型化数组和字符串创建Blob
+    // let hello = new Uint8Array([72, 101, 108, 108, 111])
+    // let blob = new Blob([hello, ' ', 'wang'], {
+    //   type: "text/plain"
+    // })
+    // console.log(blob)
+
+    // 1.分片上传
+    const file = new File(['a'.repeat(10000000)], "demo.txt")
+    const chunkSize = 40000
+    const requestUrl = 'https://httpbin.org/post'
+    async function chunkedUpload() {
+      for (let start = 0; start < file.size; start += chunkSize) {
+        const chunk = file.slice(start, start + chunkSize + 1)
+        const formData = new FormData()
+        formData.append('file', chunk)
+        const res = await fetch(requestUrl, { method: "post", body: formData })
+        console.log(res);
+      }
+    }
+
+    chunkedUpload()
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clipboard</title>
+  </head>
+  <body>
+    <!-- <textarea name="rich-text" id="txt" cols="30" rows="10">
+要复制的文本内容</textarea
+    >
+    <button id="btn" type="button">点击复制</button> -->
+
+    <div id="container"></div>
+  </body>
+
+  <script>
+    // const iptEl = document.getElementById("txt");
+    // const btnEl = document.getElementById("btn");
+    const containerEl = document.getElementById("container");
+
+    // function getSelectionTxt() {
+    //   console.log(document.selection, window.getSelection());
+    //   if (document.selection) {
+    //     return document.selection.createRange().text;
+    //   } else {
+    //     return String(window.getSelection());
+    //   }
+    // }
+
+    // document.addEventListener("copy", (evt) => {
+    //   const { clipboardData } = evt;
+    //   if (!clipboardData) return;
+    //   // 获取选中文本
+    //   let txt = getSelectionTxt();
+    //   if (!txt) return;
+    //   // 有要操作的目标内容，组织浏览器默认行为
+    //   evt.preventDefault();
+    //   txt += "\n\n【原文地址：https://www.baidu.com】";
+    //   // 写入剪切板
+    //   clipboardData.setData("text/plain", txt);
+    // });
+
+    document.addEventListener("paste", (evt) => {
+      containerEl.innerHTML = "";
+      const items = Array.from((evt.clipboardData || {}).items || []);
+
+      items.forEach((item, i) => {
+        const { kind, type, files } = item;
+        const hdEl = document.createElement("h3");
+        hdEl.innerHTML = `序号：${i}；kind：${kind}; type：${type}`;
+        containerEl.appendChild(hdEl);
+
+        const isFile = kind === "file";
+        let previewEl = document.createElement(isFile ? "img" : "textarea");
+        console.log(files);
+        if (isFile) {
+          const file = item.getAsFile();
+          console.log("file", file);
+          previewEl.src = URL.createObjectURL(file);
+        } else {
+          if (type === "text/html") {
+            previewEl = document.createElement("frame");
+            item.getAsString((str) => {
+              previewEl.srcdoc = str;
+            });
+          } else {
+            item.getAsString((str) => {
+              previewEl.value = str;
+            });
+          }
+        }
+        containerEl.appendChild(previewEl);
+      });
+    });
+  </script>
+</html>

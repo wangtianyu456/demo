@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xlsx</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <style>
+      #container {
+        width: 600px;
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe id="container"></iframe>
+    <button id="button">download</button>
+    <input type="file" id="file" />
+  </body>
+  <script>
+    let wb = XLSX.utils.book_new();
+    const fileList = [
+      {
+        fileName: "变量文件111",
+        paramList: [
+          {
+            paramName: "姓名111",
+            required: 1,
+          },
+          {
+            paramName: "手机号111",
+            required: 0,
+          },
+          {
+            paramName: "性别111",
+            required: 1,
+          },
+        ],
+      },
+      {
+        fileName: "变量文件222",
+        paramList: [
+          {
+            paramName: "姓名222",
+            required: 1,
+          },
+          {
+            paramName: "手机号222",
+            required: 0,
+          },
+        ],
+      },
+    ];
+    let aoa = [
+      [
+        `填写要求：
+    1、带*号标记的为必填内容，如未填写可能导致上传失败；
+    2、联系方式请使用真实的手机号或邮箱，否则文件将发送失败；
+    3、填写非大陆的个人接收方手机号时，请务必在手机号前加上国际电话区号，区号与手机号之间请以“-”区分（如香港用户填写示例：852-6546****），大陆用户可不填写区号；
+    4、若文件或接收方类型发生变化，请重新下载并使用最新的模板。
+        `,
+      ],
+      [`1、身份信息`, null, `2、变量信息`],
+      [`*接收方真实姓名`, `接收方手机号/邮箱`],
+      [null, null],
+      [null, null],
+    ];
+
+    let totalParamLength = 0;
+
+    fileList.forEach((file) => {
+      totalParamLength += file.paramList.length;
+      aoa[2].push(file.fileName);
+      file.paramList.forEach((param, index) => {
+        if (index > 0) {
+          aoa[2].push(null);
+        }
+        aoa[3].push(`${param.required ? "*" : ""}${param.paramName}`);
+      });
+    });
+
+    let sheet = XLSX.utils.aoa_to_sheet(aoa);
+    let merges = [
+      // 提示
+      {
+        e: { c: totalParamLength + 1, r: 0 },
+        s: { c: 0, r: 0 },
+      },
+      // 身份信息
+      {
+        e: { c: 1, r: 1 },
+        s: { c: 0, r: 1 },
+      },
+      // 变量信息
+      {
+        e: { c: 2 + totalParamLength - 1, r: 1 },
+        s: { c: 2, r: 1 },
+      },
+
+      // 接收方真实姓名 接收方 手机号邮箱
+      { e: { c: 0, r: 3 }, s: { c: 0, r: 2 } },
+      { e: { c: 1, r: 3 }, s: { c: 1, r: 2 } },
+    ];
+
+    function getBeforeParamList(index) {
+      let list = [];
+      for (let i = 0; i <= index; i++) {
+        console.log("fileList", fileList);
+        list.push([...fileList[i].paramList]);
+      }
+      return list;
+    }
+
+    fileList.forEach((file, index) => {
+      let start = 2 + getBeforeParamList(index).length + 1;
+
+      if (index === 0) {
+        merges.push({
+          e: {
+            c: 2 + file.paramList.length - 1,
+            r: 2,
+          },
+          s: { c: 2, r: 2 },
+        });
+      } else {
+        merges.push({
+          e: {
+            c: start + file.paramList.length - 1,
+            r: 2,
+          },
+          s: { c: start, r: 2 },
+        });
+      }
+    });
+    console.log(merges);
+
+    sheet["!merges"] = merges;
+
+    console.log(XLSX);
+    console.log(aoa);
+    XLSX.utils.book_append_sheet(wb, sheet, "sheet1");
+    const html = XLSX.utils.sheet_to_html(sheet);
+    container.srcdoc = html;
+    button.onclick = () => {
+      XLSX.writeFile(wb, "haha.xlsx");
+    };
+
+    file.onchange = (e) => {
+      const target = e.target;
+      const files = target.files;
+      const file = files[0];
+      const fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        const arrayBuffer = e.target.result;
+        const r = XLSX.read(arrayBuffer, { type: "binary" });
+        const sheet = r.Sheets["sheet1"];
+        const json = XLSX.utils.sheet_to_formulae(sheet);
+        console.log(json);
+      };
+      fileReader.readAsBinaryString(file);
+    };
+  </script>
+</html>

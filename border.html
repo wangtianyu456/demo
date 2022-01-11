@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<style>
+  .app {
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+    position: relative;
+  }
+
+  .app::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    height: 1px;
+    width: 100%;
+    background-color: #999;
+    transform-origin: 50% 0%;
+  }
+</style>
+
+<body>
+  <div class="app">app</div>
+</body>
+
+</html>

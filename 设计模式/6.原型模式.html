@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>原型模式</title>
+  </head>
+  <body>
+    <script>
+      // 原型
+      // 函数有个属性 prototype
+      // 对象有个属性 __proto__
+
+      // 实现一个深拷贝
+      // 最简单方案
+      const obj = { name: "wang", age: 123 };
+      const obj2 = JSON.stringify(obj);
+      // 但是这种方案有缺点，就是无法处理function、正则等
+
+      // 用递归实现一种较为完美的方案
+      function deepClone(obj) {
+        if (typeof obj !== "object" || obj === null) {
+          return obj;
+        }
+        let newObj = {};
+
+        // 如果是数组，则定义结果为数组
+        if (obj.constructor === Array) {
+          newObj = [];
+        }
+
+        // 遍历对象的key
+        for (let key in obj) {
+          // 如果key 是自有属性
+          if (obj.hasOwnProperty(key)) {
+            newObj[key] = deepClone(obj[key]);
+          }
+        }
+        return newObj;
+      }
+    </script>
+  </body>
+</html>

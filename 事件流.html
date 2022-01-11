@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间流</title>
+</head>
+
+<body>
+  <div id="app">
+    <button id="btn">点击按钮</button>
+  </div>
+  <script>
+    const app = document.getElementById('app')
+    const btn = document.getElementById('btn')
+
+    document.addEventListener('click', () => {
+      console.log('document 捕获');
+    }, true)
+    document.addEventListener('click', () => {
+      console.log('document 冒泡');
+    })
+
+    app.addEventListener('click', () => {
+      console.log('app 捕获')
+    }, true)
+    app.addEventListener('click', () => {
+      console.log('app 冒泡')
+    })
+
+    btn.addEventListener('click', () => {
+      console.log('btn 捕获')
+    }, true)
+    btn.addEventListener('click', () => {
+      console.log('btn 冒泡')
+    })
+
+  </script>
+
+</body>
+
+</html>

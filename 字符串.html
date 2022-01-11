@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>字符串</title>
+</head>
+<body>
+<script>
+    /*    let str = 'aaabsbshhhhhsbbfhhhffbsbbaaa'
+        let arr = str.split('')
+        for (let i = 0; i < arr.length; i++) {
+            const element = arr[i]
+            if (element === arr[i + 1]) {
+                arr.splice(i, 1)
+                i--
+            }
+        }
+        str = arr.join()
+        str = str.replace(/,/g, (...arg) => {
+            return ''
+        })
+        console.log(str)
+        */
+    let str = "a-bc-def"
+    str = str.replace(/(.)(-)(.)/g, (...arg) => {
+        return arg[1]+arg[3].toUpperCase()
+    })
+    console.log(str)
+</script>
+</body>
+</html>

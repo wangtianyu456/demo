@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Document</title>
+</head>
+
+<body>
+  <input type="file" accept="image/*" id="fileInput" />
+  <img src="" alt="" id="img">
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const image = document.getElementById('img')
+    fileInput.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      console.log('file=>', file)
+      const reader = new FileReader();
+      reader.onload = function (img) {
+        console.log(img.target.result);
+        image.src = img.target.result
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+
+</html>

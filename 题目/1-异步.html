@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    async function async1() {
+      console.log(1);
+      const result = await async2()
+      console.log(3)
+    }
+
+    async function async2() {
+      console.log(2)
+    }
+
+    Promise.resolve().then(() => {
+      console.log(4);
+    })
+
+    setTimeout(() => {
+      console.log(5);
+    })
+    async1()
+    console.log(6);
+
+    // 1  2  6  4  3  5
+
+    // async1()  1
+    // async2()  2 // 此处await了所以等待下个队列
+    // Promise执行，然后将then挂载到微任务队列
+    // setTimeOut 执行任务挂载到下个宏任务队列
+    // console.log(6);
+
+    // 第一轮的宏任务执行完毕，执行微任务
+    // console.log(4);
+
+    // 第一轮任务队列执行完毕，之前的await继续执行
+    // console.log(3);
+
+    // console.log(5);
+
+
+  </script>
+</body>
+
+</html>

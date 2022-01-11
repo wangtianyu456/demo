@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <p>文件类型:jpeg jpg png gif</p>
+  <input type="file" id="fileInput" accept="image/*">
+
+
+  <script src="https://cdn.bootcss.com/blueimp-md5/2.13.0/js/md5.min.js"></script>
+  <script src="./js/util.js"></script>
+  <script src="./js/ajax.js"></script>
+  <script>
+    const fileInput = document.getElementById('fileInput')
+    const limitTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+    const limitMaxSize = 10000 * 1024
+
+    const clearFileInput = () => { fileInput.value = '' }
+    const alertMessage = (msg) => { alert(msg) }
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0]
+      console.log(file);
+
+      if (!file) return
+      if (!limitTypes.includes(file.type)) {
+        alertMessage('文件类型不符合限制')
+        clearFileInput()
+      }
+      if (file.size > limitMaxSize) {
+        alertMessage(`文件大小不能大于${limitMaxSize / 1024}`)
+        clearFileInput()
+      }
+      console.log(file.slice())
+    }
+
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+  <title>抽象工厂</title>
+</head>
+<body>
+<script>
+  // 在实际业务中，我们往往面对的复杂度并非数个类、一个工厂可以解决，而是需要动用多个工厂
+  // 简单工厂函数最后长这样
+  //   function Factory(name, age, career) {
+  //     let work;
+  //     switch (career) {
+  //       case "coder":
+  //         work = ["写代码", "写系分", "修Bug"];
+  //         break;
+  //       case "product manager":
+  //         work = ["订会议室", "写PRD", "催更"];
+  //         break;
+  //       case "boss":
+  //         work = ["喝茶", "看报", "见客户"];
+  //       default:
+  //         break;
+  //     }
+  //     return new User(name.age, career, work);
+  //   }
+
+  //  抽象工厂模式
+  // 一部手机需要操作系统(OS)和硬件(HardWare)组成。如果说要开一个手机工厂，就既需要准备好操作系统，也需要准备好硬件，才能量产。而现在我并不知道我的下一个生产线具体想生产一台什么样的手机，我只知道手机必须有这两部分组成。
+  // 所以我们先来一个抽象类约定住这台手机的基本组成
+  class MobilePhoneFactory {
+    // 提供操作系统的接口
+    createOS() {
+      throw new Error("抽象工厂方法不允许直接调用，需要进行重写")
+    }
+
+    // 提供硬件的接口
+    createHardWare() {
+      throw new Error("抽象工厂方法不允许直接调用，需要进行重写")
+    }
+  }
+
+  // 这个类除了约定手机流水线的通用能力外，啥也不干。如果你尝试让它干点啥，不如new一个实例，并尝试调用它的实例方法，还会报错
+  // 「抽象工厂」只是一个定规矩的，需要干活的是「具体工厂」
+  // 当我们明确了生产方案，明确某一条生产线具体需要生产什么样的手机了之后，既可以化抽象为具体，比如我现在需要一个专门生产Android系统+高通硬件的生产线，我给这类手机型号起名叫FakeStar，那么我就可以给FakeStar定制一个具体工厂
+  class FakeStarFactory extends MobilePhoneFactory {
+    createOS() {
+      return new AndroidOS()
+    }
+
+    createHardWare() {
+      return new QualcommHardWare()
+    }
+  }
+
+  // 这里我们在提供安卓系统的时候，调用了两个构造函数:AndroidOS和QualcommHardWare，他们分别用于生成具体的操作系统和硬件实例。像这种被我们拿来用于new出具体对象的类，叫做具体产品类。
+  // 具体产品类往往不会孤立存在，不同的具体产品类往往有着共同的功能，比如安卓系统类和苹果系统类，它们都是操作系统，都有着可以操作手机硬件系统这样一个基本的功能。
+  // 因此我们可以用一个抽象产品类来声明这一类产品应该具有的基本功能
+
+  // 定义操作系统这类产品的抽象产品类
+  class OS {
+    constrolHardWare() {
+      throw new Error("抽象工厂方法不允许直接调用，需要进行重写")
+    }
+  }
+
+  // 定义具体操作系统的具体产品类
+  class AndroidOS extends OS {
+    controlHardWare() {
+      console.log("安卓操作硬件")
+    }
+  }
+
+  class AppleOS extends OS {
+    controlHardWare() {
+      console.log("操作硬件")
+    }
+  }
+
+  // 硬件类同理
+  class HardWare {
+    // 手机硬件的共性方法，这里提取了‘根据命令运转’这个共性
+    operateByOrder() {
+      throw new Error("抽象工厂方法不允许直接调用，需要进行重写")
+    }
+  }
+
+  // 定义具体硬件的具体产品类
+  class QualcommHardWare extends HardWare {
+    operateByOrder() {
+      console.log("高通的方式去运转")
+    }
+  }
+
+  class MiWare extends HardWare {
+    operateByOrder() {
+      console.log("小米的方式去运转")
+    }
+  }
+
+  // 这样一来，当我们需要生产一台手机时，我们只需要这样做
+  const myPhone = new FakeStarFactory()
+  const myOS = myPhone.createOS()
+  const myHardWare = myPhone.createHardWare()
+  myOS.controlHardWare()
+  myHardWare.operateByOrder()
+</script>
+</body>
+</html>

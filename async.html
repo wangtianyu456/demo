@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>async</title>
+</head>
+
+<body>
+
+    <script>
+        async function fun1() {
+            return new Promise(() => {
+                console.log('fun1')
+            })
+        }
+        function fun2() {
+            return new Promise(() => {
+                console.log('fun2')
+            })
+        }
+        function fun3() {
+            return new Promise(() => {
+                console.log('fun3')
+            })
+
+        }
+        async function foo() {
+            await fun1()
+            await fun2()
+            await fun3()
+        }
+
+
+    </script>
+</body>
+
+</html>

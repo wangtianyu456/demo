@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>代理模式-应用实践范例</title>
+</head>
+
+<body>
+  <div id="father">
+    <a href="#">链接1号</a>
+    <a href="#">链接2号</a>
+    <a href="#">链接3号</a>
+    <a href="#">链接4号</a>
+    <a href="#">链接5号</a>
+    <a href="#">链接6号</a>
+  </div>
+  <script>
+    // 四种常见的代理类型：事件代理、虚拟代理、缓存代理、保护代理
+
+    // 现在的需求是，希望鼠标点击每个a标签，都可以弹出「我是xxx」这样的提示。比如点击第一个a标签，弹出我是「我是链接1号」这样的提示。这意味着我们至少要安装6个监听函数给6个不同的元素，但是我们可以应用事件代理来优化
+
+    // 事件代理
+    // 基于事件的冒泡传播机制
+    const father = document.getElementById("father");
+
+    // 给父元素安装一次监听函数
+    father.addEventListener("click", function (e) {
+      // 识别是否是目标子元素
+      if (e.target.tagName === "A") {
+        e.preventDefault();
+        alert(`我是${e.target.innerText}`);
+      }
+    });
+
+    // 虚拟代理
+    // 实现图片的预加载，加载时，让img标签先展示一个占位图，然后创建一个image实例，当这个image的onload时，再将该src赋值给当前的img，这时img直接读取图片缓存
+    //   class PreLoadImage {
+    //     // 占位图的url地址
+    //     static LOADING_URL = "xxx";
+    //     constructor(imgNode) {
+    //       // 获取该实例对应的DOM节点
+    //       this.imgNode = imgNode;
+    //     }
+
+    //     // 该方法用于设置真实的图片地址
+    //     setSrc(targetUrl) {
+    //       // img节点初始化时展示的是一个占位图
+    //       this.imgNode.src = PreLoadImage.LOADING_URL;
+    //       // 创建一个帮我们加载图片的Image实例
+    //       const image = new Image();
+    //       // 监听目标图片加载的情况，完成时再将DOM上的img节点的src属性设置为目标图片的url
+    //       image.onload = () => {
+    //         this.imgNode.src = targetUrl;
+    //       };
+    //       // 设置src属性，Image实例开始加载图片
+    //       image.src = targetUrl;
+    //     }
+    //   }
+    // 但是这样做违反了设计原则中的单一职责原则。PreLoadImage不仅要负责图片的加载，还要负责DOM层面的操作(img节点初始化和后续的改变)。这样一来，就出现了两个可能导致这个类发生变化的原因
+
+    // 好的做法是将两个逻辑分离，让PreLoadImage专心去做DOM层面的事情，在找一个对象来专门帮我们搞加载，而这两个对象之间的媒介就是代理器
+    class PreLoadImage {
+      constructor(imgNode) {
+        // 获取真实的DOM节点
+        this.imgNode = imgNode;
+      }
+      // 操作img节点的src属性
+      setSrc(imgUrl) {
+        this.imgNode.src = imgUrl;
+      }
+    }
+
+    class ProxyImage {
+      // 占位图的url地址
+      static LOADING_URL = "xxx";
+      constructor(targetImage) {
+        // 目标Image,即PreLoadImage实例
+        this.targetImage = targetImage;
+      }
+
+      setSrc(targetUrl) {
+        // 真实img节点初始化时展示占位图
+        this.targetImage.setSrc(ProxyImage.LOADING_URL);
+
+        // 创建一个帮我们加载图片的image实例
+        const virtualImage = new Image();
+        // 监听目标图片加载的情况，完成时再将DOM上的真实img节点的src属性设置为目标图片的url
+        virtualImage.onload = () => {
+          this.targetImage.setSrc(targetUrl);
+        };
+        // 设置src属性，虚拟Image实例开始加载图片
+        virtualImage.src = targetUrl;
+      }
+    }
+    // ProxyImage 帮我们调度了预加载相关的工作，我们可以通过ProxyImage这个代理，实现对真实img节点的间接访问，并得到我们想要的结果
+
+    // 缓存代理
+    // 缓存代理应用于一些计算量较大的场景里，这中场景下，我们需要"用空间换时间"————当我们需要用某个已经计算过的值得时候，不想再耗时进行第二次计算，而是希望能直接从内存里去取出线程的计算结果，这种场景下，就需要一个代理来帮我们在进行计算的同时，进行计算结果的缓存了
+    // 对传入的参数进行求和
+    const addAll = function () {
+      console.log("进行了一次新计算");
+      let result = 0;
+      const len = arguments.length;
+      for (let i = 0; i < len; i++) {
+        result += arguments[i]
+      }
+      return result
+    };
+
+    // 为求和方法创建代理
+    const proxyAddAll = (function () {
+      // 求和结果缓存池
+      const resultCache = {}
+      return function () {
+        // 将入参转化为一个唯一的入参字符串
+        const args = Array.prototype.join.call(arguments, ',')
+        // 检查本次入参是否有对应的计算结果
+        if (args in resultCache) {
+          return resultCache[args]
+        }
+        return resultCache[args] = addAll(...arguments)
+      }
+    })()
+
+    // 这样如果两次入参完全相同，那么proxyAddAll就不会进行重复的计算，而是直接返回存储的结果
+
+    // 保护代理就是 10.代理模式 中提到的中介
+    // 就是在访问层面做处理，在getter和setter里去进行校验和拦截，确保一部分变量是安全的
+    // 在实现保护代理时，首要的方案就是Proxy
+  </script>
+</body>
+
+</html>

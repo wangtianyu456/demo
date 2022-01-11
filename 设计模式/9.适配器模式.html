@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+  <title>适配器模式</title>
+</head>
+<body>
+<script>
+  import axiox from 'axios'
+
+  // 适配器模式通过 把一个类的接口变换成客户端所期待的另一种接口，可以帮我们解决不兼容的问题
+
+  // 对fetch进行封装
+  export default class HttpUtils {
+    // get 方法
+    static get(url) {
+      return new Promise((resolve, reject) => {
+        // 调用fetch
+        fetch(url)
+          .then(response => response.json())
+          .then(result => resolve(result))
+          .catch(error => reject(error))
+      })
+    }
+
+    static post(url, data) {
+      return new Promise((resolve, reject) => {
+        // 调用fetch
+        fetch(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          // 将object类型的数据格式化为合法的body参数
+          body: this.changeData(data)
+        })
+          .then(response => response.json())
+          .then(result => resolve(result))
+          .catch(error => reject(error))
+      })
+    }
+
+    // body请求体的格式化方法
+    static changeData(obj) {
+      let prop,
+        str = ""
+      let i = 0
+      for (prop in obj) {
+        if (!prop) {
+          return
+        }
+        if (i === 0) {
+          str += prop + "=" + obj[prop]
+        } else {
+          str += "&" + prop + "=" + obj[prop]
+        }
+        i++
+      }
+      return str
+    }
+  }
+
+  // 当使用fetch的时候，只需要轻松的调用，而不必担心繁琐的数据配置和数据格式化
+  const URL = "https://www.google.com"
+  const params = {
+    k: "vscode"
+  }
+  // 发起post请求
+  // const postResponse = await HttpUtils.post(URL,params) || {}
+  // get请求
+  // const getResponse = await HttpUtils.get(URL)
+
+  // 以前的方法库 Ajax
+  function Ajax(type, url, data, success, failed) {
+    let xhr = null
+    if (window.XMLHttpRequest) {
+      xhr = new XMLHttpRequest()
+    } else {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP")
+    }
+
+    // ... 省略业务细节
+
+    var type = type.toUpperCase()
+
+    // 识别请求类型
+    if (type === 'Get') {
+      if (data) {
+        xhr.open('GET', url + '?' + data, true)
+      }
+      xhr.send()
+    } else if (type === 'POST') {
+      xhr.open('POST', url, true)
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+      xhr.send(data)
+    }
+
+    // 处理返回数据
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          success(xhr.responseText)
+        } else {
+          if (failed) {
+            failed(xhr.status)
+          }
+        }
+      }
+    }
+  }
+
+  // 利用适配器模式，将老代码迁移到新接口
+  // 我们只需要在引接口时，进行一次适配，便可轻松的cover掉业务
+
+  async function AjaxAdapter(type, url, data, success, failed) {
+    var type = type.toUpperCase()
+    let result
+    try {
+      // 实际的请求全部由新接口发起
+      if (type === 'GET') {
+        result = await HttpUtils.get(url) || {}
+      } else if (type === 'POST') {
+        result = await HttpUtils.post(url, data) || {}
+      }
+      // 假设请求成功对应的状态码是0
+      result.statusCode === 0 && success ? success(result) : failed(result.statusCode)
+    } catch (error) {
+      if (failed) {
+        failed(error.statusCode)
+      }
+    }
+  }
+
+  async function Ajax(type, url, data, success, failed) {
+    await AjaxAdapter(type, url, data, success, failed)
+  }
+
+  // 生产实践--axios中的适配器
+  axios.get('/user?id=123').then(function (response) {
+    // handle success
+    console.log(response)
+  })
+    .catch(function (error) {
+      // handle error
+      console.log(error)
+    })
+    .then(function () {
+      // always executed
+    })
+
+  axios.post('/user', {
+    firstName: 'Wang',
+    lastName: 'yu'
+  })
+    .then(function (response) {
+      console.log(response)
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+
+  axios({
+    method: 'post',
+    url: '/user/123',
+    data: {
+      firstName: 'Wang',
+      lastName: 'yu'
+    }
+  })
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+
+  <script>
+    const target = {
+      _id: "1234",
+      name: "vuejs",
+    };
+    const validators = {
+      name(val) {
+        return typeof val === "string";
+      },
+      _id(val) {
+        return typeof val === "number" && val > 1024;
+      },
+    };
+    const createValidator = (target, validator) => {
+      return new Proxy(target, {
+        _validator: validator,
+        set(target, propKey, value, proxy) {
+          let validator = this._validator[propKey](value);
+          if (validator) {
+            return Reflect.set(target, propKey, value, proxy);
+          } else {
+            throw new Error(`cannot set value. Invalid type`);
+          }
+        },
+      });
+    };
+    const proxy = createValidator(target, validators);
+    // proxy.name = "abc";
+    // proxy.name = 123;
+    // proxy._id = 1235;
+  </script>
+</html>
