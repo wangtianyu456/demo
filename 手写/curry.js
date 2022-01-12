@@ -22,27 +22,22 @@ const _curry = (fn, ...args) => {
   return res;
 };
 
-const __curry = (fn, ...args) => {
+const curry111 = (fn) => {
   const length = fn.length;
-  const res = (...args2) => {
-    const finalArgs = [...args, ...args2];
-    if (finalArgs.length === length) {
-      return fn(...finalArgs);
+  return function curried(...args) {
+    console.log(args);
+    if (args.length === length) {
+      return fn.apply(this, [...args]);
     } else {
-      return __curry(fn, ...finalArgs);
+      return function (...args2) {
+        return curried.apply(this, [...args, ...args2]);
+      };
     }
   };
 };
 
-const ___curry = (fn, ...args) => {
-  const length = fn.length;
-  const res = (...newArgs) => {
-    let finalArgs = [...args, ...newArgs];
-    if (finalArgs.length === length) {
-      return fn(...finalArgs);
-    } else {
-      return ___curry(fn, [...finalArgs]);
-    }
-  };
-  return res;
+const sum = (a, b, c) => {
+  return a + b + c;
 };
+const curried = curry111(sum);
+console.log(curried(1)(2)(3));
